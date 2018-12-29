@@ -1,0 +1,61 @@
+//-----------------------------------------------------------------
+//-- The robot will be "push" by hand or other object
+//-- change to Otto.walk(1,1000,1) to make the robot follow you!
+//-----------------------------------------------------------------
+#include <Servo.h> 
+#include <Oscillator.h>
+#include <US.h>
+#include <Otto.h>
+Otto Otto;  //This is Otto!
+//---------------------------------------------------------
+//-- First step: Make sure the pins for servos are in the right position
+/*
+         --------------- 
+        |     O   O     |
+        |---------------|
+YR 3==> |               | <== YL 2
+         --------------- 
+            ||     ||
+RR 5==>   -----   ------  <== RL 4
+         |-----   ------|
+*/
+
+#define PIN_YL 2 //servo[2]
+#define PIN_YR 3 //servo[3]
+#define PIN_RL 4 //servo[4]
+#define PIN_RR 5 //servo[5]
+
+//-- Movement parameters
+int T=1000;              //Initial duration of movement
+int moveId=0;            //Number of movement
+int moveSize=15;         //Asociated with the height of some movements
+//---------------------------------------------------------
+bool obstacleDetected = false;
+
+void setup(){
+  //Set the servo pins
+  Otto.init(PIN_YL,PIN_YR,PIN_RL,PIN_RR,true);
+  Otto.home();
+  delay(50);
+}
+
+void loop() {
+  if(obstacleDetected){ 
+    Otto.walk(1,1000,-1);  //Otto.walk(1,1000,1) to make the robot follow you!
+    obstacleDetector(); 
+    }else{ 
+      Otto.home();
+      obstacleDetector(); 
+    }           
+}  
+
+///////////////////////////////////////////////////////////////////
+//-- Function to read distance sensor & to actualize obstacleDetected variable
+void obstacleDetector(){
+   int distance = Otto.getDistance();
+        if(distance<15){
+          obstacleDetected = true;
+        }else{
+          obstacleDetected = false;
+        }
+}
